@@ -2,6 +2,7 @@
 """guest module for a hotel reservation system"""
 
 class Guest:
+    """represents a guest in the reservation system"""
 
     def __init__(self, guest_id, full_name, phone, email):
 
@@ -38,6 +39,7 @@ class Guest:
         self.email = new_email
 
     def get_info(self):
+        """returns the guest info"""
         return (f"{self.guest_id} {self.full_name} "
                 f"{self.phone} {self.email}")
 
