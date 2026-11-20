@@ -1,7 +1,6 @@
-
 """Reservation module for a hotel reservation system"""
 
-from guests import Guest
+from guest import Guest
 from room import Room
 
 
