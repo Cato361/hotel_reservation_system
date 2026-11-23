@@ -1,5 +1,7 @@
 """Hotel Module: manages rooms, guests, and reservations."""
 
+import json
+
 from room import Room
 from guest import Guest
 from reservation import Reservation
@@ -73,9 +75,73 @@ class HotelSystem:
             raise ValueError("Reservation not found.")
         reservation.cancel_reservation()
 
+    def save_to_file(self):
+        """Save all rooms, guests and reservations to the JSON file."""
+        rooms_data = []
+        for room in self.rooms:
+            rooms_data.append(room.to_dict())
+
+        guests_data = []
+        for guest in self.guests:
+            guests_data.append(guest.to_dict())
+
+        reservations_data = []
+        for reservation in self.reservations:
+            reservations_data.append(reservation.to_dict())
+
+        data = {
+            "rooms": rooms_data,
+            "guests": guests_data,
+            "reservations": reservations_data
+        }
+
+        with open(self.data_file, "w") as file:
+            json.dump(data, file, indent=4)
+
+    def load_from_file(self):
+        """Load all rooms, guests and reservations from the JSON file.
+        If the file does not exist, stays empty.
+        """
+        try:
+            with open(self.data_file, "r") as file:
+                data = json.load(file)
+        except FileNotFoundError:
+            print("No saved data found. Starting with an empty hotel.")
+            return
+
+        self.rooms = []
+        for item in data["rooms"]:
+            room = Room(
+                item["room_number"],
+                item["room_type"],
+                item["price_per_night"],
+                item["is_available"]
+            )
+            self.rooms.append(room)
+
+        self.guests = []
+        for item in data["guests"]:
+            guest = Guest(
+                item["guest_id"],
+                item["full_name"],
+                item["phone"],
+                item["email"]
+            )
+            self.guests.append(guest)
+
+        self.reservations = []
+        for item in data["reservations"]:
+            guest = self.find_guest(item["guest_id"])
+            room = self.find_room(item["room_number"])
+            reservation = Reservation(
+                item["reservation_id"], guest, room, item["nights"]
+            )
+            reservation.status = item["status"]
+            self.reservations.append(reservation)
+
 
 if __name__ == "__main__":
-    hotel_system = HotelSystem()
+    hotel_system = HotelSystem("test_hotel.json")
 
     hotel_system.add_room(Room(1, "single", 80.0))
     hotel_system.add_room(Room(2, "double", 100.0))
@@ -87,21 +153,19 @@ if __name__ == "__main__":
         Guest(1, "John Doe", "123456789", "john@example.com")
     )
 
-    reservation = hotel_system.create_reservation(1, 2, 3)
-    print(reservation.get_summary())
-
-    print("\nAvailable rooms:")
-    for room in hotel_system.list_available_rooms():
-        print(room.get_details())
-
-    print("\nTrying to reserve the same room again:")
-    try:
-        hotel_system.create_reservation(1, 2, 3)
-    except ValueError as error:
-        print(error)
+    hotel_system.create_reservation(1, 2, 3)
 
     hotel_system.cancel_reservation(1)
 
-    print("\nAvailable rooms after cancellation:")
-    for room in hotel_system.list_available_rooms():
+    hotel_system.save_to_file()
+
+    new_hotel = HotelSystem("test_hotel.json")
+    new_hotel.load_from_file()
+
+    print("Rooms:")
+    for room in new_hotel.rooms:
         print(room.get_details())
+
+    print("\nReservations:")
+    for reservation in new_hotel.reservations:
+        print(reservation.get_summary())
