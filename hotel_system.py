@@ -56,6 +56,10 @@ class HotelSystem:
 
     def create_reservation(self, guest_id, room_number, nights):
         """Create a new reservation and mark the room as reserved."""
+        if nights < 1:
+            raise ValueError("Number of nights must be at least 1.")
+
+
         guest = self.find_guest(guest_id)
         room = self.find_room(room_number)
 
@@ -166,6 +170,6 @@ if __name__ == "__main__":
     for room in new_hotel.rooms:
         print(room.get_details())
 
-    print("\nReservations:")
+    print("Reservations:")
     for reservation in new_hotel.reservations:
         print(reservation.get_summary())
