@@ -5,6 +5,7 @@ from room import Room
 
 
 class Reservation:
+    """Represents a reservation that links a guest to a room."""
 
     def __init__(self, reservation_id, guest, room, nights):
         """Create new reservation."""

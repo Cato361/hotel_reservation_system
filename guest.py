@@ -1,8 +1,8 @@
 
-"""guest module for a hotel reservation system"""
+"""Guest module for a hotel reservation system"""
 
 class Guest:
-    """represents a guest in the reservation system"""
+    """Represents a guest in the reservation system"""
 
     def __init__(self, guest_id, full_name, phone, email):
 
@@ -18,16 +18,16 @@ class Guest:
         self.email = email
 
     def validate_phone(self, phone):
-        """checks if the phone number is valid"""
+        """Checks if the phone number is valid"""
         cleaned = phone.replace("+", "").replace(" ", "")
         return cleaned.isdigit() and 7 <= len(cleaned) <= 15
 
     def validate_email(self, email):
-        """checks if the email is valid"""
+        """Checks if the email is valid"""
         return "@" in email and "." in email.split("@")[1]
 
     def update_contact(self, new_phone, new_email):
-        """updates guest phone and email"""
+        """Updates guest phone and email"""
 
         if not self.validate_phone(new_phone):
             raise ValueError("Invalid phone number")
@@ -39,12 +39,12 @@ class Guest:
         self.email = new_email
 
     def get_info(self):
-        """returns the guest info"""
+        """Returns the guest info"""
         return (f"{self.guest_id} {self.full_name} "
                 f"{self.phone} {self.email}")
 
     def to_dict(self):
-        """return the member data as a dictionary"""
+        """Return the member data as a dictionary"""
         return {
             "guest_id": self.guest_id,
             "full_name": self.full_name,
